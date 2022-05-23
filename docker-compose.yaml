@@ -1,0 +1,42 @@
+version: "3.2"
+
+services:
+  estoque-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: estoque-backend
+    volumes:
+      - "./backend:/home/node/app"
+    env_file:
+      - ./frontend/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:12.10
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - "database:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: postgres
+      POSTGRES_DB: frexco-estoque
+
+  adminer:
+    image: adminer:4.8.1
+    container_name: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+
+volumes:
+  database:
+    external: true
